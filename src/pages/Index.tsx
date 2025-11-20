@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Building2, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import logo from '@/assets/logo.jpg';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -26,7 +27,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background flex items-center justify-center p-4">
       <div className="text-center space-y-6 max-w-2xl animate-fade-in">
         <div className="flex items-center justify-center gap-3">
-          <Building2 className="h-16 w-16 text-primary" />
+          <img src={logo} alt="Logo" className="h-24 w-auto object-contain" />
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-foreground">
           Office Support Dashboard

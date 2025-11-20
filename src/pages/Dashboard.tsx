@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogOut, UserPlus, Users } from 'lucide-react';
+import { Loader2, LogOut, UserPlus } from 'lucide-react';
 import { EmployeeTable } from '@/components/EmployeeTable';
+import logo from '@/assets/logo.jpg';
 
 const Dashboard = () => {
   const { user, loading, signOut, isAdmin } = useAuth();
@@ -33,7 +34,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Users className="h-6 w-6 text-primary" />
+              <img src={logo} alt="Logo" className="h-10 w-auto object-contain" />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">IT Support Dashboard</h1>
                 <p className="text-sm text-muted-foreground">
