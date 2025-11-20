@@ -330,53 +330,130 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
       {/* View Dialog */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Employee Details</DialogTitle>
+            <DialogTitle className="text-2xl gradient-text">Employee Details</DialogTitle>
             <DialogDescription>Complete information for {selectedEmployee?.name}</DialogDescription>
           </DialogHeader>
           {selectedEmployee && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Name</p>
-                  <p>{selectedEmployee.name}</p>
+            <div className="space-y-6 py-4">
+              {/* Personal Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-primary">Personal Information</h3>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Name</p>
+                    <p className="font-medium">{selectedEmployee.name}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Username</p>
+                    <p className="font-medium">{selectedEmployee.username}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Email</p>
+                    <p className="font-medium">{selectedEmployee.email}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Extension</p>
+                    <p className="font-medium">{selectedEmployee.extension_number || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Department</p>
+                    <p className="font-medium">{selectedEmployee.department}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Section</p>
+                    <p className="font-medium">{selectedEmployee.section}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Username</p>
-                  <p>{selectedEmployee.username}</p>
+              </div>
+
+              {/* Computer Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-secondary">Computer Information</h3>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-secondary/10 rounded-lg border border-secondary/20">
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Computer Name</p>
+                    <p className="font-medium">{selectedEmployee.computer_name || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Computer Serial</p>
+                    <p className="font-medium">{selectedEmployee.computer_serial || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">IP Address</p>
+                    <p className="font-medium">{selectedEmployee.ip_address || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Last PM Date</p>
+                    <p className="font-medium">
+                      {selectedEmployee.last_pm 
+                        ? new Date(selectedEmployee.last_pm).toLocaleDateString() 
+                        : '-'}
+                    </p>
+                  </div>
+                  <div className="col-span-2 animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">System Specifications</p>
+                    <p className="font-medium">{selectedEmployee.specs || '-'}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Email</p>
-                  <p>{selectedEmployee.email}</p>
+              </div>
+
+              {/* Peripherals */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-accent">Peripherals & Devices</h3>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">LED/LCD Model</p>
+                    <p className="font-medium">{selectedEmployee.led_model || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">LED/LCD Serial</p>
+                    <p className="font-medium">{selectedEmployee.led_serial || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Printer Model</p>
+                    <p className="font-medium">{selectedEmployee.printer_model || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Printer Serial</p>
+                    <p className="font-medium">{selectedEmployee.printer_serial || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Scanner Model</p>
+                    <p className="font-medium">{selectedEmployee.scanner_model || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Scanner Serial</p>
+                    <p className="font-medium">{selectedEmployee.scanner_serial || '-'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Keyboard</p>
+                    <p className="font-medium">
+                      {selectedEmployee.keyboard ? 'Yes' : 'No'}
+                    </p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Mouse</p>
+                    <p className="font-medium">
+                      {selectedEmployee.mouse ? 'Yes' : 'No'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Department</p>
-                  <p>{selectedEmployee.department}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Section</p>
-                  <p>{selectedEmployee.section}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Extension</p>
-                  <p>{selectedEmployee.extension_number || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Computer Name</p>
-                  <p>{selectedEmployee.computer_name || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">IP Address</p>
-                  <p>{selectedEmployee.ip_address || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Internet Access</p>
-                  <p>{selectedEmployee.internet_access ? 'Yes' : 'No'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">USB Access</p>
-                  <p>{selectedEmployee.usb_access ? 'Yes' : 'No'}</p>
+              </div>
+
+              {/* Access Permissions */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-destructive">Access Permissions</h3>
+                <div className="grid grid-cols-2 gap-4 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Internet Access</p>
+                    <p className="font-medium">{selectedEmployee.internet_access ? 'Yes' : 'No'}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">USB Access</p>
+                    <p className="font-medium">{selectedEmployee.usb_access ? 'Yes' : 'No'}</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { EmployeeForm } from '@/components/EmployeeForm';
+import { Footer } from '@/components/Footer';
 
 const AddEmployee = () => {
   const { user, loading } = useAuth();
@@ -28,15 +29,15 @@ const AddEmployee = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="border-b border-border bg-card animate-fade-in shadow-md">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button onClick={() => navigate('/dashboard')} variant="ghost" size="icon">
+            <Button onClick={() => navigate('/dashboard')} variant="ghost" size="icon" className="hover-scale">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Add New Employee</h1>
+              <h1 className="text-2xl font-bold gradient-text">Add New Employee</h1>
               <p className="text-sm text-muted-foreground">
                 Enter employee and device information
               </p>
@@ -45,9 +46,11 @@ const AddEmployee = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 animate-fade-in-up">
+      <main className="container mx-auto px-4 py-8 animate-fade-in-up flex-1">
         <EmployeeForm />
       </main>
+
+      <Footer />
     </div>
   );
 };
