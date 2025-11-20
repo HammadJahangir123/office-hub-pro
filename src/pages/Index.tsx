@@ -24,7 +24,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background flex items-center justify-center p-4">
-      <div className="text-center space-y-6 max-w-2xl">
+      <div className="text-center space-y-6 max-w-2xl animate-fade-in">
         <div className="flex items-center justify-center gap-3">
           <Building2 className="h-16 w-16 text-primary" />
         </div>

@@ -283,8 +283,8 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                   </TableRow>
                 ) : (
                   filteredEmployees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell className="font-medium">{employee.name}</TableCell>
+              <TableRow key={employee.id} className="transition-all duration-200 hover:bg-accent/50">
+                <TableCell className="font-medium">{employee.name}</TableCell>
                       <TableCell>{employee.email}</TableCell>
                       <TableCell>{employee.department}</TableCell>
                       <TableCell>{employee.section}</TableCell>

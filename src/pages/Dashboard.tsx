@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-card animate-fade-in">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 animate-fade-in-up">
         <EmployeeTable isAdmin={isAdmin} />
       </main>
     </div>
