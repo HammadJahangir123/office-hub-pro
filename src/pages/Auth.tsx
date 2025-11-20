@@ -82,7 +82,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-accent/20 to-background p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md animate-fade-in hover-lift">
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-center gap-2">
             <Building2 className="h-8 w-8 text-primary" />
