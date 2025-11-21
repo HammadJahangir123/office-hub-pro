@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, LogOut, UserPlus, Database, Users, Shield } from 'lucide-react';
 import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
+import { StatsCards } from '@/components/StatsCards';
 import logo from '@/assets/logo.jpg';
 
 const Dashboard = () => {
@@ -62,6 +63,7 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 animate-fade-in-up flex-1">
+        <StatsCards />
         <EmployeeTable isAdmin={isAdmin} />
       </main>
 
