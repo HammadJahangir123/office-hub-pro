@@ -37,7 +37,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmployeeForm } from './EmployeeForm';
-import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users } from 'lucide-react';
+import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users, Calendar as CalendarIcon, X } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface Employee {
   id: string;
@@ -67,6 +71,8 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteEmployee, setDeleteEmployee] = useState<Employee | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
+  const [toDate, setToDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     fetchEmployees();
@@ -74,7 +80,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
   useEffect(() => {
     filterEmployees();
-  }, [employees, searchTerm, departmentFilter]);
+  }, [employees, searchTerm, departmentFilter, fromDate, toDate]);
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -106,6 +112,21 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       filtered = filtered.filter(e => e.department === departmentFilter);
     }
 
+    // Date range filter
+    if (fromDate || toDate) {
+      filtered = filtered.filter(e => {
+        const createdDate = new Date(e.created_at);
+        if (fromDate && toDate) {
+          return createdDate >= fromDate && createdDate <= toDate;
+        } else if (fromDate) {
+          return createdDate >= fromDate;
+        } else if (toDate) {
+          return createdDate <= toDate;
+        }
+        return true;
+      });
+    }
+
     // Search filter (multi-field)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -121,6 +142,11 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     }
 
     setFilteredEmployees(filtered);
+  };
+
+  const clearDateFilter = () => {
+    setFromDate(undefined);
+    setToDate(undefined);
   };
 
   const handleView = async (employeeId: string) => {
@@ -255,6 +281,78 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
               <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>
+          </div>
+          
+          {/* Date Range Filter */}
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[200px] justify-start text-left font-normal",
+                      !fromDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {fromDate ? format(fromDate, "PPP") : "From date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={fromDate}
+                    onSelect={setFromDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[200px] justify-start text-left font-normal",
+                      !toDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {toDate ? format(toDate, "PPP") : "To date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={toDate}
+                    onSelect={setToDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {(fromDate || toDate) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearDateFilter}
+                  className="hover-scale"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            {(fromDate || toDate) && (
+              <p className="text-sm text-muted-foreground">
+                Showing employees added {fromDate && `from ${format(fromDate, "PPP")}`}
+                {fromDate && toDate && ' '}
+                {toDate && `to ${format(toDate, "PPP")}`}
+              </p>
+            )}
           </div>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             <Users className="h-4 w-4" />
