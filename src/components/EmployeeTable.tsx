@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmployeeForm } from './EmployeeForm';
-import { Download, Edit, Eye, Loader2, Search, Trash2 } from 'lucide-react';
+import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users } from 'lucide-react';
 
 interface Employee {
   id: string;
@@ -221,7 +221,10 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Search & Filter</CardTitle>
+          <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5 text-primary" />
+            <CardTitle className="text-foreground">Search & Filter</CardTitle>
+          </div>
           <CardDescription>Find employees by any field</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -253,7 +256,8 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
               Export CSV
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
+            <Users className="h-4 w-4" />
             Showing {filteredEmployees.length} of {employees.length} employees
           </p>
         </CardContent>

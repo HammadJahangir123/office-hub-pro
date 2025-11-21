@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogOut, UserPlus } from 'lucide-react';
+import { Loader2, LogOut, UserPlus, Database, Users, Shield } from 'lucide-react';
 import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import logo from '@/assets/logo.jpg';
@@ -36,11 +36,15 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={logo} alt="Logo" className="h-10 w-auto object-contain animate-float" />
-              <div>
-                <h1 className="text-2xl font-bold gradient-text">IT Support Dashboard</h1>
-                <p className="text-sm text-muted-foreground">
-                  {isAdmin ? 'Admin Panel' : 'Employee Panel'}
-                </p>
+              <div className="flex items-center gap-2">
+                <Database className="h-6 w-6 text-primary" />
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">IT Support Dashboard</h1>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    {isAdmin ? <Shield className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+                    {isAdmin ? 'Admin Panel' : 'Employee Panel'}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
