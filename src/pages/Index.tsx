@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight, Shield } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import logo from '@/assets/logo.jpg';
 
@@ -31,14 +31,18 @@ const Index = () => {
           <div className="flex items-center justify-center gap-3">
             <img src={logo} alt="Logo" className="h-24 w-auto object-contain animate-float" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text">
-            Office Support Dashboard
-          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <Shield className="h-8 w-8 text-primary" />
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground">
+              Office Support Dashboard
+            </h1>
+          </div>
           <p className="text-xl text-muted-foreground">
             Centralized system for IT Managers to manage office devices and user information
           </p>
           <div className="flex gap-4 justify-center">
             <Button onClick={() => navigate('/auth')} size="lg" className="hover-lift animate-glow">
+              <ArrowRight className="h-4 w-4 mr-2" />
               Get Started
             </Button>
             <Button onClick={() => navigate('/auth')} variant="outline" size="lg" className="hover-lift">

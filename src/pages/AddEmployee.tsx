@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, UserPlus } from 'lucide-react';
 import { EmployeeForm } from '@/components/EmployeeForm';
 import { Footer } from '@/components/Footer';
 
@@ -36,11 +36,14 @@ const AddEmployee = () => {
             <Button onClick={() => navigate('/dashboard')} variant="ghost" size="icon" className="hover-scale">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold gradient-text">Add New Employee</h1>
-              <p className="text-sm text-muted-foreground">
-                Enter employee and device information
-              </p>
+            <div className="flex items-center gap-2">
+              <UserPlus className="h-6 w-6 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Add New Employee</h1>
+                <p className="text-sm text-muted-foreground">
+                  Enter employee and device information
+                </p>
+              </div>
             </div>
           </div>
         </div>

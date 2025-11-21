@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { z } from 'zod';
 import { Footer } from '@/components/Footer';
 import logo from '@/assets/logo.jpg';
+import { LogIn, UserPlus, Shield } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -88,8 +89,9 @@ const Auth = () => {
           <CardHeader className="space-y-4">
             <div className="flex items-center justify-center gap-2">
               <img src={logo} alt="Logo" className="h-12 w-auto object-contain" />
+              <Shield className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-center gradient-text text-2xl">
+            <CardTitle className="text-center text-foreground text-2xl">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </CardTitle>
             <CardDescription className="text-center">
@@ -130,6 +132,7 @@ const Auth = () => {
                     {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                   </div>
                   <Button type="submit" className="w-full hover-scale">
+                    <LogIn className="h-4 w-4 mr-2" />
                     Sign In
                   </Button>
                 </form>
@@ -185,6 +188,7 @@ const Auth = () => {
                     )}
                   </div>
                   <Button type="submit" className="w-full hover-scale">
+                    <UserPlus className="h-4 w-4 mr-2" />
                     Create Account
                   </Button>
                 </form>
