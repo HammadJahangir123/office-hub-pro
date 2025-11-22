@@ -9,7 +9,7 @@ export const Footer = () => {
             © {currentYear} Office Support Dashboard. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground text-center md:text-right">
-            Powered by IT Support Team
+            Powered by Hammad Jahangir
           </p>
         </div>
       </div>
