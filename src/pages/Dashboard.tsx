@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogOut, UserPlus, Database, Users, Shield } from 'lucide-react';
+import { Loader2, LogOut, UserPlus, Database, Users, Shield, History } from 'lucide-react';
 import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import { StatsCards } from '@/components/StatsCards';
@@ -52,6 +52,10 @@ const Dashboard = () => {
               <Button onClick={() => navigate('/add-employee')} variant="default" className="hover-scale">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add Employee
+              </Button>
+              <Button onClick={() => navigate('/activity-log')} variant="outline" className="hover-scale">
+                <History className="h-4 w-4 mr-2" />
+                Activity Log
               </Button>
               <Button onClick={signOut} variant="ghost" className="hover-scale">
                 <LogOut className="h-4 w-4 mr-2" />
