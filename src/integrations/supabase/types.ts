@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      employee_audit_log: {
+        Row: {
+          action: string
+          changed_by: string
+          changed_by_email: string
+          changed_by_name: string | null
+          changes: Json | null
+          created_at: string
+          employee_id: string | null
+          id: string
+          new_data: Json | null
+          old_data: Json | null
+        }
+        Insert: {
+          action: string
+          changed_by: string
+          changed_by_email: string
+          changed_by_name?: string | null
+          changes?: Json | null
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string
+          changed_by_email?: string
+          changed_by_name?: string | null
+          changes?: Json | null
+          created_at?: string
+          employee_id?: string | null
+          id?: string
+          new_data?: Json | null
+          old_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_audit_log_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
           computer_name: string | null
