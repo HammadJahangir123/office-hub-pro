@@ -6,6 +6,7 @@ import { Loader2, LogOut, UserPlus, Database, Users, Shield, History } from 'luc
 import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import { StatsCards } from '@/components/StatsCards';
+import { PingChecker } from '@/components/PingChecker';
 import logo from '@/assets/logo.jpg';
 
 const Dashboard = () => {
@@ -68,6 +69,11 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8 animate-fade-in-up flex-1">
         <StatsCards />
+        
+        <div className="mb-8">
+          <PingChecker />
+        </div>
+
         <EmployeeTable isAdmin={isAdmin} />
       </main>
 
