@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity, Gauge, Zap, Loader2 } from 'lucide-react';
+import { Activity, Gauge, Zap, Loader2, Play, Square, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+
+interface NetworkMetrics {
+  downloadSpeed: number;
+  uploadSpeed: number;
+  latency: number;
+  jitter: number;
+  timestamp: number;
+}
 
 export const NetworkDiagnostics = () => {
   const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null);
@@ -13,6 +22,9 @@ export const NetworkDiagnostics = () => {
   const [jitter, setJitter] = useState<number | null>(null);
   const [testing, setTesting] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [monitoring, setMonitoring] = useState(false);
+  const [metricsHistory, setMetricsHistory] = useState<NetworkMetrics[]>([]);
+  const monitoringIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const measureLatency = async (): Promise<number[]> => {
     const latencies: number[] = [];
@@ -81,42 +93,126 @@ export const NetworkDiagnostics = () => {
     }
   };
 
-  const runFullTest = async () => {
-    setTesting(true);
-    setProgress(0);
-    setDownloadSpeed(null);
-    setUploadSpeed(null);
-    setLatency(null);
-    setJitter(null);
+  const runFullTest = async (isMonitoring = false) => {
+    if (!isMonitoring) {
+      setTesting(true);
+      setProgress(0);
+      setDownloadSpeed(null);
+      setUploadSpeed(null);
+      setLatency(null);
+      setJitter(null);
+    }
 
     try {
       // Test latency and jitter
-      setProgress(25);
+      if (!isMonitoring) setProgress(25);
       const latencies = await measureLatency();
       const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
       const calculatedJitter = calculateJitter(latencies);
+      
+      // Test download speed
+      if (!isMonitoring) setProgress(50);
+      const dlSpeed = await testDownloadSpeed();
+      
+      // Test upload speed
+      if (!isMonitoring) setProgress(75);
+      const upSpeed = await testUploadSpeed();
+
+      const newMetrics: NetworkMetrics = {
+        downloadSpeed: dlSpeed,
+        uploadSpeed: upSpeed,
+        latency: avgLatency,
+        jitter: calculatedJitter,
+        timestamp: Date.now()
+      };
+
       setLatency(avgLatency);
       setJitter(calculatedJitter);
-
-      // Test download speed
-      setProgress(50);
-      const dlSpeed = await testDownloadSpeed();
       setDownloadSpeed(dlSpeed);
-
-      // Test upload speed
-      setProgress(75);
-      const upSpeed = await testUploadSpeed();
       setUploadSpeed(upSpeed);
 
-      setProgress(100);
-      toast.success('Speed test completed');
+      if (isMonitoring) {
+        checkForSignificantChanges(newMetrics);
+        setMetricsHistory(prev => [...prev.slice(-9), newMetrics]);
+      }
+
+      if (!isMonitoring) {
+        setProgress(100);
+        toast.success('Speed test completed');
+      }
     } catch (error) {
-      toast.error('Speed test failed');
+      if (!isMonitoring) {
+        toast.error('Speed test failed');
+      }
       console.error('Speed test error:', error);
     } finally {
-      setTesting(false);
+      if (!isMonitoring) {
+        setTesting(false);
+      }
     }
   };
+
+  const checkForSignificantChanges = (newMetrics: NetworkMetrics) => {
+    if (metricsHistory.length === 0) return;
+
+    const lastMetrics = metricsHistory[metricsHistory.length - 1];
+    
+    // Check for significant latency increase (>50ms or >50% increase)
+    if (newMetrics.latency > lastMetrics.latency + 50 || 
+        newMetrics.latency > lastMetrics.latency * 1.5) {
+      toast.error(
+        `High latency detected: ${newMetrics.latency.toFixed(0)}ms (was ${lastMetrics.latency.toFixed(0)}ms)`,
+        { icon: <AlertTriangle className="h-4 w-4" /> }
+      );
+    }
+
+    // Check for significant speed drop (>50% decrease)
+    if (newMetrics.downloadSpeed < lastMetrics.downloadSpeed * 0.5) {
+      toast.warning(
+        `Download speed dropped: ${newMetrics.downloadSpeed.toFixed(2)} Mbps (was ${lastMetrics.downloadSpeed.toFixed(2)} Mbps)`,
+        { icon: <AlertTriangle className="h-4 w-4" /> }
+      );
+    }
+
+    // Check for significant jitter increase (>30ms increase)
+    if (newMetrics.jitter > lastMetrics.jitter + 30) {
+      toast.warning(
+        `High jitter detected: ${newMetrics.jitter.toFixed(0)}ms (was ${lastMetrics.jitter.toFixed(0)}ms)`,
+        { icon: <AlertTriangle className="h-4 w-4" /> }
+      );
+    }
+  };
+
+  const startMonitoring = () => {
+    setMonitoring(true);
+    setMetricsHistory([]);
+    toast.success('Real-time monitoring started');
+    
+    // Run initial test
+    runFullTest(true);
+    
+    // Set up interval for continuous monitoring (every 30 seconds)
+    monitoringIntervalRef.current = setInterval(() => {
+      runFullTest(true);
+    }, 30000);
+  };
+
+  const stopMonitoring = () => {
+    setMonitoring(false);
+    if (monitoringIntervalRef.current) {
+      clearInterval(monitoringIntervalRef.current);
+      monitoringIntervalRef.current = null;
+    }
+    toast.info('Real-time monitoring stopped');
+  };
+
+  useEffect(() => {
+    return () => {
+      if (monitoringIntervalRef.current) {
+        clearInterval(monitoringIntervalRef.current);
+      }
+    };
+  }, []);
 
 
   return (
@@ -132,25 +228,54 @@ export const NetworkDiagnostics = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="flex justify-center">
-            <Button 
-              onClick={runFullTest} 
-              disabled={testing}
-              size="lg"
-              className="hover-scale"
-            >
-              {testing ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Testing...
-                </>
-              ) : (
-                <>
-                  <Zap className="h-5 w-5 mr-2" />
-                  Run Speed Test
-                </>
-              )}
-            </Button>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => runFullTest(false)} 
+                disabled={testing || monitoring}
+                size="lg"
+                className="hover-scale"
+              >
+                {testing ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Testing...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-5 w-5 mr-2" />
+                    Run Speed Test
+                  </>
+                )}
+              </Button>
+
+              <Button 
+                onClick={monitoring ? stopMonitoring : startMonitoring}
+                disabled={testing}
+                size="lg"
+                variant={monitoring ? "destructive" : "secondary"}
+                className="hover-scale"
+              >
+                {monitoring ? (
+                  <>
+                    <Square className="h-5 w-5 mr-2" />
+                    Stop Monitoring
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-5 w-5 mr-2" />
+                    Start Monitoring
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {monitoring && (
+              <Badge variant="secondary" className="animate-pulse">
+                <Activity className="h-3 w-3 mr-1" />
+                Live Monitoring Active
+              </Badge>
+            )}
           </div>
 
           {testing && (
