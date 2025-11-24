@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AddEmployee from "./pages/AddEmployee";
 import ActivityLog from "./pages/ActivityLog";
+import ImportData from "./pages/ImportData";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/add-employee" element={<AddEmployee />} />
           <Route path="/activity-log" element={<ActivityLog />} />
+          <Route path="/import-data" element={<ImportData />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
