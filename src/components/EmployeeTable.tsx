@@ -94,8 +94,8 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
       setEmployees(data || []);
       
-      // Extract unique departments
-      const uniqueDepts = [...new Set(data?.map(e => e.department) || [])];
+      // Extract unique departments, filtering out empty strings
+      const uniqueDepts = [...new Set(data?.map(e => e.department).filter(dept => dept && dept.trim() !== '') || [])];
       setDepartments(uniqueDepts);
     } catch (error: any) {
       toast.error(error.message);
