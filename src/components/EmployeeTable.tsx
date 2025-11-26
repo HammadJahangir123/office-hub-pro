@@ -76,6 +76,38 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
   useEffect(() => {
     fetchEmployees();
+
+    // Set up real-time subscription for immediate updates
+    const channel = supabase
+      .channel('employees-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'employees'
+        },
+        (payload) => {
+          console.log('Real-time update:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            setEmployees(prev => [payload.new as Employee, ...prev]);
+            toast.success('New employee added');
+          } else if (payload.eventType === 'UPDATE') {
+            setEmployees(prev => 
+              prev.map(emp => emp.id === payload.new.id ? payload.new as Employee : emp)
+            );
+          } else if (payload.eventType === 'DELETE') {
+            setEmployees(prev => prev.filter(emp => emp.id !== payload.old.id));
+            toast.success('Employee deleted successfully');
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {
@@ -192,8 +224,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
       if (error) throw error;
 
-      toast.success('Employee deleted successfully');
-      fetchEmployees();
+      // Real-time subscription will handle the UI update and toast
     } catch (error: any) {
       toast.error(error.message);
     } finally {
