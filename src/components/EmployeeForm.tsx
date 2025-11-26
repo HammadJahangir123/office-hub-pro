@@ -75,6 +75,13 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
       }
 
       if (employee?.id) {
+        // Get user profile for notification
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+
         // Update existing employee
         const { error } = await supabase
           .from('employees')
@@ -83,6 +90,24 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
 
         if (error) throw error;
         toast.success('Employee updated successfully');
+
+        // Send notification email to admins
+        try {
+          await supabase.functions.invoke('send-employee-update-notification', {
+            body: {
+              employeeName: data.name,
+              employeeDepartment: data.department,
+              employeeSection: data.section,
+              changedBy: profile?.full_name || user.email || 'Unknown User',
+              changedByEmail: profile?.email || user.email || 'unknown@email.com',
+              oldData: employee,
+              newData: data,
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send notification:', emailError);
+          // Don't show error to user as the update was successful
+        }
       } else {
         // Create new employee
         const employeeData: any = {
