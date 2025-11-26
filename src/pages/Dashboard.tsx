@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Loader2, LogOut, UserPlus, Database, Users, Shield, History, FileSpreadsheet } from 'lucide-react';
@@ -14,11 +13,6 @@ const Dashboard = () => {
   const { user, loading, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -29,7 +23,7 @@ const Dashboard = () => {
   }
 
   if (!user) {
-    return null;
+    return <Navigate to="/auth" replace />;
   }
 
   return (
