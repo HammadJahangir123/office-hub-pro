@@ -102,7 +102,7 @@ export const useAuth = () => {
     }
     
     toast.success('Signed out successfully');
-    navigate('/auth');
+    // Don't manually navigate - let the auth state change trigger the redirect
   };
 
   return {
