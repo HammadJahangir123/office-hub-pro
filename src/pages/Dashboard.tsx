@@ -6,6 +6,7 @@ import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import { StatsCards } from '@/components/StatsCards';
 import { PingChecker } from '@/components/PingChecker';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import logo from '@/assets/logo.jpg';
 
 const Dashboard = () => {
@@ -64,6 +65,7 @@ const Dashboard = () => {
                 <History className="h-4 w-4 mr-2" />
                 Activity Log
               </Button>
+              <ThemeToggle />
               <Button onClick={signOut} variant="ghost" className="hover-scale">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
