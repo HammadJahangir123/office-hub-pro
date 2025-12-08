@@ -428,12 +428,22 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       </html>
     `;
     
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.print();
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+    
+    const iframeDoc = iframe.contentWindow?.document;
+    if (iframeDoc) {
+      iframeDoc.open();
+      iframeDoc.write(printContent);
+      iframeDoc.close();
+      iframe.contentWindow?.print();
     }
+    
+    setTimeout(() => document.body.removeChild(iframe), 1000);
   };
 
   const printEmployeeDetails = () => {
@@ -522,12 +532,22 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       </html>
     `;
     
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.print();
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+    
+    const iframeDoc = iframe.contentWindow?.document;
+    if (iframeDoc) {
+      iframeDoc.open();
+      iframeDoc.write(printContent);
+      iframeDoc.close();
+      iframe.contentWindow?.print();
     }
+    
+    setTimeout(() => document.body.removeChild(iframe), 1000);
   };
 
   if (loading) {
