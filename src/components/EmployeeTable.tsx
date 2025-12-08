@@ -282,16 +282,36 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
   };
 
   const exportToExcel = () => {
-    const data = filteredEmployees.map(e => ({
+    const data = filteredEmployees.map((e: any) => ({
       'Name': e.name,
       'Username': e.username,
       'Email': e.email,
       'Location': e.location || '',
       'Department': e.department,
       'Section': e.section,
-      'Computer Name': e.computer_name || '',
-      'IP Address': e.ip_address || '',
       'Extension': e.extension_number || '',
+      // Computer Information
+      'Computer Name': e.computer_name || '',
+      'Computer Serial': e.computer_serial || '',
+      'IP Address': e.ip_address || '',
+      'Specifications': e.specs || '',
+      'Last PM Date': e.last_pm ? new Date(e.last_pm).toLocaleDateString() : '',
+      // Peripherals & Devices
+      'LED/LCD Model': e.led_model || '',
+      'LED/LCD Serial': e.led_serial || '',
+      'Printer Model': e.printer_model || '',
+      'Printer Serial': e.printer_serial || '',
+      'Scanner Model': e.scanner_model || '',
+      'Scanner Serial': e.scanner_serial || '',
+      'Keyboard': e.keyboard ? 'Yes' : 'No',
+      'Mouse': e.mouse ? 'Yes' : 'No',
+      // Access Permissions
+      'Internet Access': e.internet_access ? 'Yes' : 'No',
+      'USB Access': e.usb_access ? 'Yes' : 'No',
+      // Custom Peripherals
+      'Custom Peripherals': e.custom_peripherals?.length > 0 
+        ? e.custom_peripherals.map((p: any) => `${p.name}${p.model ? ` (${p.model})` : ''}${p.serial ? ` - ${p.serial}` : ''}`).join('; ')
+        : '',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
