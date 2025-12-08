@@ -74,7 +74,9 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
   const [deleteEmployee, setDeleteEmployee] = useState<Employee | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
+  const [sections, setSections] = useState<string[]>([]);
   const [locationFilter, setLocationFilter] = useState('all');
+  const [sectionFilter, setSectionFilter] = useState('all');
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
 
@@ -116,7 +118,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
   useEffect(() => {
     filterEmployees();
-  }, [employees, searchTerm, departmentFilter, locationFilter, fromDate, toDate]);
+  }, [employees, searchTerm, departmentFilter, locationFilter, sectionFilter, fromDate, toDate]);
 
   // Reset department filter when location changes and update available departments
   useEffect(() => {
@@ -140,6 +142,34 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       }
     }
   }, [locationFilter, employees]);
+
+  // Reset section filter when department changes and update available sections
+  useEffect(() => {
+    let filteredByLocation = employees;
+    if (locationFilter !== 'all') {
+      filteredByLocation = filteredByLocation.filter(e => e.location === locationFilter);
+    }
+
+    if (departmentFilter === 'all') {
+      // Show all sections when no department is selected (but still respect location filter)
+      const uniqueSections = [...new Set(filteredByLocation.map(e => e.section).filter(sec => sec && sec.trim() !== ''))];
+      setSections(uniqueSections);
+    } else {
+      // Show only sections that exist in the selected department
+      const sectionsInDept = [...new Set(
+        filteredByLocation
+          .filter(e => e.department === departmentFilter)
+          .map(e => e.section)
+          .filter(sec => sec && sec.trim() !== '')
+      )];
+      setSections(sectionsInDept);
+      
+      // Reset section filter if current selection is not available in this department
+      if (sectionFilter !== 'all' && !sectionsInDept.includes(sectionFilter)) {
+        setSectionFilter('all');
+      }
+    }
+  }, [departmentFilter, locationFilter, employees]);
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -178,6 +208,11 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     // Department filter
     if (departmentFilter !== 'all') {
       filtered = filtered.filter(e => e.department === departmentFilter);
+    }
+
+    // Section filter
+    if (sectionFilter !== 'all') {
+      filtered = filtered.filter(e => e.section === sectionFilter);
     }
 
     // Date range filter
@@ -546,6 +581,19 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                 {departments.map(dept => (
                   <SelectItem key={dept} value={dept}>
                     {dept}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sectionFilter} onValueChange={setSectionFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Section" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sections</SelectItem>
+                {sections.map(sec => (
+                  <SelectItem key={sec} value={sec}>
+                    {sec}
                   </SelectItem>
                 ))}
               </SelectContent>
