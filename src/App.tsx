@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import AddEmployee from "./pages/AddEmployee";
 import ActivityLog from "./pages/ActivityLog";
 import ImportData from "./pages/ImportData";
+import LocationsManagement from "./pages/LocationsManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/add-employee" element={<AddEmployee />} />
           <Route path="/activity-log" element={<ActivityLog />} />
           <Route path="/import-data" element={<ImportData />} />
+          <Route path="/locations" element={<LocationsManagement />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
