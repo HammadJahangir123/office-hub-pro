@@ -1,7 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Loader2, LogOut, UserPlus, Database, Users, Shield, History, FileSpreadsheet } from 'lucide-react';
+import { Loader2, LogOut, UserPlus, Database, Users, Shield, History, FileSpreadsheet, MapPin } from 'lucide-react';
 import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import { StatsCards } from '@/components/StatsCards';
@@ -52,6 +52,12 @@ const Dashboard = () => {
                 <Button onClick={() => navigate('/import-data')} variant="secondary" className="hover-scale">
                   <FileSpreadsheet className="h-4 w-4 mr-2" />
                   Import Data
+                </Button>
+              )}
+              {isAdmin && (
+                <Button onClick={() => navigate('/locations')} variant="outline" className="hover-scale">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Locations
                 </Button>
               )}
               <Button onClick={() => navigate('/activity-log')} variant="outline" className="hover-scale">
