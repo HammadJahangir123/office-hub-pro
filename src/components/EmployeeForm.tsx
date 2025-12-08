@@ -18,6 +18,7 @@ interface CustomPeripheral {
   name: string;
   model: string;
   serial: string;
+  [key: string]: string; // Add index signature for Json compatibility
 }
 
 const employeeSchema = z.object({
@@ -54,7 +55,9 @@ interface EmployeeFormProps {
 
 export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [customPeripherals, setCustomPeripherals] = useState<CustomPeripheral[]>([]);
+  const [customPeripherals, setCustomPeripherals] = useState<CustomPeripheral[]>(
+    employee?.custom_peripherals || []
+  );
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
 
@@ -102,6 +105,9 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
         return;
       }
 
+      // Filter custom peripherals to only include items with at least a name
+      const validPeripherals = customPeripherals.filter(p => p.name.trim() !== '');
+
       if (employee?.id) {
         // Get user profile for notification
         const { data: profile } = await supabase
@@ -113,7 +119,7 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
         // Update existing employee
         const { error } = await supabase
           .from('employees')
-          .update(data)
+          .update({ ...data, custom_peripherals: validPeripherals })
           .eq('id', employee.id);
 
         if (error) throw error;
@@ -141,6 +147,7 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
         const employeeData: any = {
           ...data,
           created_by: user.id,
+          custom_peripherals: validPeripherals,
         };
         
         const { error } = await supabase
