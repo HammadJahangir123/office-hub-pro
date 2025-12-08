@@ -6,7 +6,6 @@ import { EmployeeTable } from '@/components/EmployeeTable';
 import { Footer } from '@/components/Footer';
 import { StatsCards } from '@/components/StatsCards';
 import { PingChecker } from '@/components/PingChecker';
-import { NetworkDiagnostics } from '@/components/NetworkDiagnostics';
 import logo from '@/assets/logo.jpg';
 
 const Dashboard = () => {
@@ -74,12 +73,6 @@ const Dashboard = () => {
         <div className="mb-8">
           <PingChecker />
         </div>
-
-        {isAdmin && (
-          <div className="mb-8">
-            <NetworkDiagnostics />
-          </div>
-        )}
 
         <EmployeeTable isAdmin={isAdmin} />
       </main>
