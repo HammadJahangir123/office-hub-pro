@@ -67,6 +67,7 @@ export type Database = {
           computer_serial: string | null
           created_at: string | null
           created_by: string | null
+          custom_peripherals: Json | null
           department: string
           email: string
           extension_number: string | null
@@ -95,6 +96,7 @@ export type Database = {
           computer_serial?: string | null
           created_at?: string | null
           created_by?: string | null
+          custom_peripherals?: Json | null
           department: string
           email: string
           extension_number?: string | null
@@ -123,6 +125,7 @@ export type Database = {
           computer_serial?: string | null
           created_at?: string | null
           created_by?: string | null
+          custom_peripherals?: Json | null
           department?: string
           email?: string
           extension_number?: string | null
