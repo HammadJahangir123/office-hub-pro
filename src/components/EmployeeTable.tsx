@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 import {
   Table,
   TableBody,
@@ -37,7 +38,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmployeeForm } from './EmployeeForm';
-import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users, Calendar as CalendarIcon, X } from 'lucide-react';
+import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users, Calendar as CalendarIcon, X, FileSpreadsheet } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
@@ -280,6 +281,27 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     toast.success('Exported to CSV');
   };
 
+  const exportToExcel = () => {
+    const data = filteredEmployees.map(e => ({
+      'Name': e.name,
+      'Username': e.username,
+      'Email': e.email,
+      'Location': e.location || '',
+      'Department': e.department,
+      'Section': e.section,
+      'Computer Name': e.computer_name || '',
+      'IP Address': e.ip_address || '',
+      'Extension': e.extension_number || '',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Employees');
+    XLSX.writeFile(workbook, `employees_${new Date().toISOString().split('T')[0]}.xlsx`);
+    
+    toast.success('Exported to Excel');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -337,7 +359,11 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
             </Select>
             <Button onClick={exportToCSV} variant="outline">
               <Download className="h-4 w-4 mr-2" />
-              Export CSV
+              CSV
+            </Button>
+            <Button onClick={exportToExcel} variant="outline">
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Excel
             </Button>
           </div>
           
