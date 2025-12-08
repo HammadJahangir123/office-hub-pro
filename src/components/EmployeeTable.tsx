@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmployeeForm } from './EmployeeForm';
-import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users, Calendar as CalendarIcon, X, FileSpreadsheet } from 'lucide-react';
+import { Download, Edit, Eye, Loader2, Search, Trash2, Filter, Users, Calendar as CalendarIcon, X, FileSpreadsheet, Printer } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
@@ -302,6 +302,156 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     toast.success('Exported to Excel');
   };
 
+  const printTable = () => {
+    const printContent = `
+      <html>
+        <head>
+          <title>Employee List</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #333; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f4f4f4; font-weight: bold; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .print-date { color: #666; font-size: 12px; margin-bottom: 10px; }
+          </style>
+        </head>
+        <body>
+          <h1>Employee List</h1>
+          <p class="print-date">Printed on: ${new Date().toLocaleString()}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Location</th>
+                <th>Department</th>
+                <th>Section</th>
+                <th>IP Address</th>
+                <th>Extension</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredEmployees.map(e => `
+                <tr>
+                  <td>${e.name}</td>
+                  <td>${e.email}</td>
+                  <td>${e.location || '-'}</td>
+                  <td>${e.department}</td>
+                  <td>${e.section}</td>
+                  <td>${e.ip_address || '-'}</td>
+                  <td>${e.extension_number || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const printEmployeeDetails = () => {
+    if (!selectedEmployee) return;
+    
+    const customPeripherals = selectedEmployee.custom_peripherals || [];
+    const customPeripheralsHtml = customPeripherals.length > 0 
+      ? `
+        <h3>Additional Peripherals</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Model</th><th>Serial</th></tr></thead>
+          <tbody>
+            ${customPeripherals.map((p: any) => `
+              <tr>
+                <td>${p.name || '-'}</td>
+                <td>${p.model || '-'}</td>
+                <td>${p.serial || '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `
+      : '';
+
+    const printContent = `
+      <html>
+        <head>
+          <title>Employee Details - ${selectedEmployee.name}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #333; margin-bottom: 5px; }
+            h2 { color: #666; font-size: 14px; margin-bottom: 20px; }
+            h3 { color: #333; margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+            .field { margin-bottom: 8px; }
+            .label { font-size: 12px; color: #666; }
+            .value { font-weight: 500; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #ddd; padding: 6px; text-align: left; font-size: 13px; }
+            th { background-color: #f4f4f4; }
+            .print-date { color: #666; font-size: 12px; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <h1>${selectedEmployee.name}</h1>
+          <h2>${selectedEmployee.department} - ${selectedEmployee.section}</h2>
+          <p class="print-date">Printed on: ${new Date().toLocaleString()}</p>
+          
+          <h3>Personal Information</h3>
+          <div class="grid">
+            <div class="field"><div class="label">Username</div><div class="value">${selectedEmployee.username}</div></div>
+            <div class="field"><div class="label">Email</div><div class="value">${selectedEmployee.email}</div></div>
+            <div class="field"><div class="label">Extension</div><div class="value">${selectedEmployee.extension_number || '-'}</div></div>
+            <div class="field"><div class="label">Location</div><div class="value">${selectedEmployee.location || '-'}</div></div>
+          </div>
+          
+          <h3>Computer Information</h3>
+          <div class="grid">
+            <div class="field"><div class="label">Computer Name</div><div class="value">${selectedEmployee.computer_name || '-'}</div></div>
+            <div class="field"><div class="label">Computer Serial</div><div class="value">${selectedEmployee.computer_serial || '-'}</div></div>
+            <div class="field"><div class="label">IP Address</div><div class="value">${selectedEmployee.ip_address || '-'}</div></div>
+            <div class="field"><div class="label">Last PM Date</div><div class="value">${selectedEmployee.last_pm ? new Date(selectedEmployee.last_pm).toLocaleDateString() : '-'}</div></div>
+          </div>
+          <div class="field"><div class="label">System Specifications</div><div class="value">${selectedEmployee.specs || '-'}</div></div>
+          
+          <h3>Peripherals & Devices</h3>
+          <div class="grid">
+            <div class="field"><div class="label">LED/LCD Model</div><div class="value">${selectedEmployee.led_model || '-'}</div></div>
+            <div class="field"><div class="label">LED/LCD Serial</div><div class="value">${selectedEmployee.led_serial || '-'}</div></div>
+            <div class="field"><div class="label">Printer Model</div><div class="value">${selectedEmployee.printer_model || '-'}</div></div>
+            <div class="field"><div class="label">Printer Serial</div><div class="value">${selectedEmployee.printer_serial || '-'}</div></div>
+            <div class="field"><div class="label">Scanner Model</div><div class="value">${selectedEmployee.scanner_model || '-'}</div></div>
+            <div class="field"><div class="label">Scanner Serial</div><div class="value">${selectedEmployee.scanner_serial || '-'}</div></div>
+            <div class="field"><div class="label">Keyboard</div><div class="value">${selectedEmployee.keyboard ? 'Yes' : 'No'}</div></div>
+            <div class="field"><div class="label">Mouse</div><div class="value">${selectedEmployee.mouse ? 'Yes' : 'No'}</div></div>
+          </div>
+          
+          ${customPeripheralsHtml}
+          
+          <h3>Access Permissions</h3>
+          <div class="grid">
+            <div class="field"><div class="label">Internet Access</div><div class="value">${selectedEmployee.internet_access ? 'Yes' : 'No'}</div></div>
+            <div class="field"><div class="label">USB Access</div><div class="value">${selectedEmployee.usb_access ? 'Yes' : 'No'}</div></div>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -364,6 +514,10 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
             <Button onClick={exportToExcel} variant="outline">
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Excel
+            </Button>
+            <Button onClick={printTable} variant="outline">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
             </Button>
           </div>
           
@@ -518,8 +672,16 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl gradient-text">Employee Details</DialogTitle>
-            <DialogDescription>Complete information for {selectedEmployee?.name}</DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-2xl gradient-text">Employee Details</DialogTitle>
+                <DialogDescription>Complete information for {selectedEmployee?.name}</DialogDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={printEmployeeDetails} className="mr-8">
+                <Printer className="h-4 w-4 mr-2" />
+                Print
+              </Button>
+            </div>
           </DialogHeader>
           {selectedEmployee && (
             <div className="space-y-6 py-4">
