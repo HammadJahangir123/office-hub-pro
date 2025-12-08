@@ -77,6 +77,7 @@ export type Database = {
           last_pm: string | null
           led_model: string | null
           led_serial: string | null
+          location: string | null
           mouse: string | null
           name: string
           printer_model: string | null
@@ -104,6 +105,7 @@ export type Database = {
           last_pm?: string | null
           led_model?: string | null
           led_serial?: string | null
+          location?: string | null
           mouse?: string | null
           name: string
           printer_model?: string | null
@@ -131,6 +133,7 @@ export type Database = {
           last_pm?: string | null
           led_model?: string | null
           led_serial?: string | null
+          location?: string | null
           mouse?: string | null
           name?: string
           printer_model?: string | null
