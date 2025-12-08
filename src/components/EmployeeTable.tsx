@@ -118,6 +118,29 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
     filterEmployees();
   }, [employees, searchTerm, departmentFilter, locationFilter, fromDate, toDate]);
 
+  // Reset department filter when location changes and update available departments
+  useEffect(() => {
+    if (locationFilter === 'all') {
+      // Show all departments when no location is selected
+      const uniqueDepts = [...new Set(employees.map(e => e.department).filter(dept => dept && dept.trim() !== ''))];
+      setDepartments(uniqueDepts);
+    } else {
+      // Show only departments that exist at the selected location
+      const deptsAtLocation = [...new Set(
+        employees
+          .filter(e => e.location === locationFilter)
+          .map(e => e.department)
+          .filter(dept => dept && dept.trim() !== '')
+      )];
+      setDepartments(deptsAtLocation);
+      
+      // Reset department filter if current selection is not available at this location
+      if (departmentFilter !== 'all' && !deptsAtLocation.includes(departmentFilter)) {
+        setDepartmentFilter('all');
+      }
+    }
+  }, [locationFilter, employees]);
+
   const fetchEmployees = async () => {
     setLoading(true);
     try {
