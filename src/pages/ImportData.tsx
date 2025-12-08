@@ -124,43 +124,74 @@ const ImportData = () => {
 
       for (const row of jsonData) {
         try {
-          // Extract the name from username (capitalize first letter of each part)
-          const username = row['Username'] || '';
-          const name = username
-            .split('.')
-            .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
-            .join(' ');
+          // Helper function to get value from various column name variations
+          const getValue = (keys: string[]): string | null => {
+            for (const key of keys) {
+              const found = Object.keys(row).find(k => k.toLowerCase().trim() === key.toLowerCase().trim());
+              if (found && row[found] !== undefined && row[found] !== '') {
+                return String(row[found]);
+              }
+            }
+            return null;
+          };
 
-          // Find the serial number columns dynamically
-          const rowKeys = Object.keys(row);
-          const serialNumberKeys = rowKeys.filter(key => key.includes('Seriel Number'));
+          // Get username with flexible column matching
+          const username = getValue(['Username', 'User Name', 'User', 'username']) || '';
           
-          const led_serial = serialNumberKeys[0] ? (row[serialNumberKeys[0]] || '') : '';
-          const printer_serial = serialNumberKeys[1] ? (row[serialNumberKeys[1]] || '') : '';
-          const scanner_serial = serialNumberKeys[2] ? (row[serialNumberKeys[2]] || '') : '';
+          // Get name - try direct column first, then generate from username
+          let name = getValue(['Name', 'Full Name', 'Employee Name', 'name']);
+          if (!name && username) {
+            name = username
+              .split('.')
+              .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
+              .join(' ');
+          }
 
+          // Get email with flexible matching
+          const email = getValue(['Email ID', 'Email', 'E-mail', 'email', 'Email Address']) || '';
+
+          // Get department and section
+          const department = getValue(['Department', 'Dept', 'department']) || '';
+          const section = getValue(['Section', 'section', 'Unit']);
+
+          // Find serial number columns dynamically
+          const rowKeys = Object.keys(row);
+          const serialNumberKeys = rowKeys.filter(key => 
+            key.toLowerCase().includes('serial') || key.toLowerCase().includes('seriel')
+          );
+          
+          const led_serial = serialNumberKeys[0] ? (row[serialNumberKeys[0]] || null) : null;
+          const printer_serial = serialNumberKeys[1] ? (row[serialNumberKeys[1]] || null) : null;
+          const scanner_serial = serialNumberKeys[2] ? (row[serialNumberKeys[2]] || null) : null;
+
+          // Build employee data - all fields are optional except required ones
           const employeeData = {
-            name: name || username,
-            username: username,
-            email: row['Email ID'] || '',
-            department: row['Department'] || '',
-            section: row['Section'] || null,
-            computer_name: row['computer name'] || null,
-            computer_serial: row['Seriel Number'] || null,
-            ip_address: row['IP Address'] || null,
-            specs: row['specification'] || null,
-            led_model: row['LED'] || null,
-            led_serial: led_serial || null,
-            printer_model: row['Pinter'] || null,
-            printer_serial: printer_serial || null,
-            scanner_model: row['Scanner'] || null,
-            scanner_serial: scanner_serial || null,
-            keyboard: row['Keboard'] || null,
-            mouse: row['Mouse'] || null,
-            internet_access: convertToBoolean(row['Internet Access']),
-            usb_access: row['USB Access'] ? convertToBoolean(row['USB Access']) : null,
-            last_pm: parseExcelDate(row['Last PM']),
-            extension_number: row['Ext Number'] || null,
+            name: name || username || 'Unknown',
+            username: username || email?.split('@')[0] || 'unknown',
+            email: email || '',
+            department: department || 'Unassigned',
+            section: section || null,
+            computer_name: getValue(['computer name', 'Computer Name', 'PC Name', 'Computer']) || null,
+            computer_serial: getValue(['Seriel Number', 'Serial Number', 'Computer Serial', 'PC Serial']) || null,
+            ip_address: getValue(['IP Address', 'IP', 'ip address', 'IP Add']) || null,
+            specs: getValue(['specification', 'Specification', 'Specs', 'System Specs', 'Computer Specs']) || null,
+            led_model: getValue(['LED', 'LCD', 'Monitor', 'LED Model', 'LCD Model']) || null,
+            led_serial: led_serial,
+            printer_model: getValue(['Pinter', 'Printer', 'Printer Model']) || null,
+            printer_serial: printer_serial,
+            scanner_model: getValue(['Scanner', 'Scanner Model']) || null,
+            scanner_serial: scanner_serial,
+            keyboard: getValue(['Keboard', 'Keyboard', 'KB']) || null,
+            mouse: getValue(['Mouse', 'mouse']) || null,
+            internet_access: getValue(['Internet Access', 'Internet', 'Net Access']) 
+              ? convertToBoolean(getValue(['Internet Access', 'Internet', 'Net Access']) || '') 
+              : true,
+            usb_access: getValue(['USB Access', 'USB', 'USB Port']) 
+              ? convertToBoolean(getValue(['USB Access', 'USB', 'USB Port']) || '') 
+              : null,
+            last_pm: parseExcelDate(getValue(['Last PM', 'PM Date', 'Last Maintenance'])),
+            extension_number: getValue(['Ext Number', 'Extension', 'Ext', 'Extension Number', 'Phone']) || null,
+            location: getValue(['Location', 'location', 'Office', 'Branch']) || null,
             created_by: user?.id,
           };
 
@@ -281,8 +312,9 @@ const ImportData = () => {
               </div>
 
               <div className="text-xs text-muted-foreground space-y-1">
-                <p>Expected columns: IP Address, Username, Email ID, Department, Section, Computer Name, etc.</p>
-                <p>Blank values accepted for: USB Access, Last PM, Section</p>
+                <p><strong>Flexible Import:</strong> Empty/missing fields will be imported as blank values.</p>
+                <p>Supported columns: IP Address, Username, Email, Department, Section, Computer Name, Location, etc.</p>
+                <p>Column names are matched flexibly (e.g., "Email ID" or "Email" both work).</p>
               </div>
             </div>
 
