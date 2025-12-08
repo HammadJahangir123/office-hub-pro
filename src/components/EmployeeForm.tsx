@@ -10,7 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+
+interface CustomPeripheral {
+  id: string;
+  name: string;
+  model: string;
+  serial: string;
+}
 
 const employeeSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -45,7 +53,9 @@ interface EmployeeFormProps {
 
 export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customPeripherals, setCustomPeripherals] = useState<CustomPeripheral[]>([]);
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   const {
     register,
@@ -63,6 +73,23 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
 
   const internetAccess = watch('internet_access');
   const usbAccess = watch('usb_access');
+
+  const addCustomPeripheral = () => {
+    setCustomPeripherals([
+      ...customPeripherals,
+      { id: crypto.randomUUID(), name: '', model: '', serial: '' }
+    ]);
+  };
+
+  const removeCustomPeripheral = (id: string) => {
+    setCustomPeripherals(customPeripherals.filter(p => p.id !== id));
+  };
+
+  const updateCustomPeripheral = (id: string, field: keyof Omit<CustomPeripheral, 'id'>, value: string) => {
+    setCustomPeripherals(customPeripherals.map(p => 
+      p.id === id ? { ...p, [field]: value } : p
+    ));
+  };
 
   const onSubmit = async (data: EmployeeFormData) => {
     setIsSubmitting(true);
@@ -209,39 +236,96 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
           <CardTitle>Peripherals</CardTitle>
           <CardDescription>Monitor, printer, and other devices</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="led_model">Monitor/LED Model</Label>
-            <Input id="led_model" {...register('led_model')} />
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="led_model">Monitor/LED Model</Label>
+              <Input id="led_model" {...register('led_model')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="led_serial">Monitor Serial Number</Label>
+              <Input id="led_serial" {...register('led_serial')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="printer_model">Printer Model</Label>
+              <Input id="printer_model" {...register('printer_model')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="printer_serial">Printer Serial Number</Label>
+              <Input id="printer_serial" {...register('printer_serial')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="scanner_model">Scanner Model</Label>
+              <Input id="scanner_model" {...register('scanner_model')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="scanner_serial">Scanner Serial Number</Label>
+              <Input id="scanner_serial" {...register('scanner_serial')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="keyboard">Keyboard</Label>
+              <Input id="keyboard" {...register('keyboard')} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mouse">Mouse</Label>
+              <Input id="mouse" {...register('mouse')} />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="led_serial">Monitor Serial Number</Label>
-            <Input id="led_serial" {...register('led_serial')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="printer_model">Printer Model</Label>
-            <Input id="printer_model" {...register('printer_model')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="printer_serial">Printer Serial Number</Label>
-            <Input id="printer_serial" {...register('printer_serial')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="scanner_model">Scanner Model</Label>
-            <Input id="scanner_model" {...register('scanner_model')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="scanner_serial">Scanner Serial Number</Label>
-            <Input id="scanner_serial" {...register('scanner_serial')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="keyboard">Keyboard</Label>
-            <Input id="keyboard" {...register('keyboard')} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mouse">Mouse</Label>
-            <Input id="mouse" {...register('mouse')} />
-          </div>
+
+          {/* Custom Peripherals Section - Admin Only */}
+          {isAdmin && (
+            <div className="border-t pt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Additional Peripherals</h4>
+                  <p className="text-xs text-muted-foreground">Add custom peripheral devices</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={addCustomPeripheral}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Item
+                </Button>
+              </div>
+              
+              {customPeripherals.map((peripheral) => (
+                <div key={peripheral.id} className="grid gap-3 md:grid-cols-4 p-4 border rounded-lg bg-muted/30">
+                  <div className="space-y-2">
+                    <Label>Device Name</Label>
+                    <Input 
+                      placeholder="e.g., Webcam"
+                      value={peripheral.name}
+                      onChange={(e) => updateCustomPeripheral(peripheral.id, 'name', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Model</Label>
+                    <Input 
+                      placeholder="Model number"
+                      value={peripheral.model}
+                      onChange={(e) => updateCustomPeripheral(peripheral.id, 'model', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Serial Number</Label>
+                    <Input 
+                      placeholder="Serial number"
+                      value={peripheral.serial}
+                      onChange={(e) => updateCustomPeripheral(peripheral.id, 'serial', e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button 
+                      type="button" 
+                      variant="destructive" 
+                      size="icon"
+                      onClick={() => removeCustomPeripheral(peripheral.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
