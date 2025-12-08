@@ -50,6 +50,7 @@ interface Employee {
   email: string;
   department: string;
   section: string;
+  location: string | null;
   computer_name: string | null;
   ip_address: string | null;
   extension_number: string | null;
@@ -71,6 +72,8 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteEmployee, setDeleteEmployee] = useState<Employee | null>(null);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [locationFilter, setLocationFilter] = useState('all');
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
 
@@ -112,7 +115,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
   useEffect(() => {
     filterEmployees();
-  }, [employees, searchTerm, departmentFilter, fromDate, toDate]);
+  }, [employees, searchTerm, departmentFilter, locationFilter, fromDate, toDate]);
 
   const fetchEmployees = async () => {
     setLoading(true);
@@ -129,6 +132,10 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       // Extract unique departments, filtering out empty strings
       const uniqueDepts = [...new Set(data?.map(e => e.department).filter(dept => dept && dept.trim() !== '') || [])];
       setDepartments(uniqueDepts);
+      
+      // Extract unique locations
+      const uniqueLocations = [...new Set(data?.map(e => e.location).filter(loc => loc && loc.trim() !== '') || [])];
+      setLocations(uniqueLocations);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -138,6 +145,11 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
 
   const filterEmployees = () => {
     let filtered = employees;
+
+    // Location filter
+    if (locationFilter !== 'all') {
+      filtered = filtered.filter(e => e.location === locationFilter);
+    }
 
     // Department filter
     if (departmentFilter !== 'all') {
@@ -237,6 +249,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       'Name',
       'Username',
       'Email',
+      'Location',
       'Department',
       'Section',
       'Computer Name',
@@ -248,6 +261,7 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
       e.name,
       e.username,
       e.email,
+      e.location || '',
       e.department,
       e.section,
       e.computer_name || '',
@@ -295,8 +309,21 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                 className="pl-9"
               />
             </div>
+            <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Locations</SelectItem>
+                {locations.map(loc => (
+                  <SelectItem key={loc} value={loc}>
+                    {loc}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-full md:w-[200px]">
+              <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Department" />
               </SelectTrigger>
               <SelectContent>
@@ -400,17 +427,17 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Section</TableHead>
                   <TableHead>IP Address</TableHead>
-                  <TableHead>Extension</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredEmployees.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       No employees found
                     </TableCell>
                   </TableRow>
@@ -419,10 +446,10 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
               <TableRow key={employee.id} className="transition-all duration-200 hover:bg-accent/50">
                 <TableCell className="font-medium">{employee.name}</TableCell>
                       <TableCell>{employee.email}</TableCell>
+                      <TableCell>{employee.location || '-'}</TableCell>
                       <TableCell>{employee.department}</TableCell>
                       <TableCell>{employee.section}</TableCell>
                       <TableCell>{employee.ip_address || '-'}</TableCell>
-                      <TableCell>{employee.extension_number || '-'}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -497,6 +524,10 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                   <div className="animate-fade-in">
                     <p className="text-sm font-medium text-muted-foreground">Section</p>
                     <p className="font-medium">{selectedEmployee.section}</p>
+                  </div>
+                  <div className="animate-fade-in">
+                    <p className="text-sm font-medium text-muted-foreground">Location</p>
+                    <p className="font-medium">{selectedEmployee.location || '-'}</p>
                   </div>
                 </div>
               </div>
