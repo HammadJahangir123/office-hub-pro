@@ -606,6 +606,26 @@ export const EmployeeTable = ({ isAdmin }: EmployeeTableProps) => {
                 </div>
               </div>
 
+              {/* Custom Peripherals */}
+              {selectedEmployee.custom_peripherals && selectedEmployee.custom_peripherals.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-chart-4">Additional Peripherals</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-chart-4/10 rounded-lg border border-chart-4/20">
+                    {selectedEmployee.custom_peripherals.map((peripheral: any, index: number) => (
+                      <div key={index} className="animate-fade-in p-3 bg-background/50 rounded-md border">
+                        <p className="font-medium text-foreground">{peripheral.name}</p>
+                        {peripheral.model && (
+                          <p className="text-sm text-muted-foreground">Model: {peripheral.model}</p>
+                        )}
+                        {peripheral.serial && (
+                          <p className="text-sm text-muted-foreground">Serial: {peripheral.serial}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Access Permissions */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-destructive">Access Permissions</h3>
