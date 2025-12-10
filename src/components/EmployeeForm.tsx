@@ -22,11 +22,12 @@ interface CustomPeripheral {
 }
 
 const employeeSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
-  username: z.string().min(3, 'Username must be at least 3 characters').max(50),
-  email: z.string().email('Invalid email address').max(255),
-  department: z.string().min(2, 'Department is required').max(100),
-  section: z.string().min(2, 'Section is required').max(100),
+  employee_code: z.string().max(50).optional(),
+  name: z.string().max(100).optional(),
+  username: z.string().max(50).optional(),
+  email: z.string().email('Invalid email address').max(255).optional().or(z.literal('')),
+  department: z.string().max(100).optional(),
+  section: z.string().max(100).optional(),
   location: z.string().max(100).optional(),
   computer_name: z.string().max(100).optional(),
   computer_serial: z.string().max(100).optional(),
@@ -179,27 +180,31 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name *</Label>
+            <Label htmlFor="employee_code">Employee Code</Label>
+            <Input id="employee_code" {...register('employee_code')} placeholder="e.g., EMP001" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Full Name</Label>
             <Input id="name" {...register('name')} />
             {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="username">Username *</Label>
+            <Label htmlFor="username">Username</Label>
             <Input id="username" {...register('username')} />
             {errors.username && <p className="text-sm text-destructive">{errors.username.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" {...register('email')} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="department">Department *</Label>
+            <Label htmlFor="department">Department</Label>
             <Input id="department" {...register('department')} />
             {errors.department && <p className="text-sm text-destructive">{errors.department.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="section">Section *</Label>
+            <Label htmlFor="section">Section</Label>
             <Input id="section" {...register('section')} />
             {errors.section && <p className="text-sm text-destructive">{errors.section.message}</p>}
           </div>

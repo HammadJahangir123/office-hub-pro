@@ -68,8 +68,9 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           custom_peripherals: Json | null
-          department: string
-          email: string
+          department: string | null
+          email: string | null
+          employee_code: string | null
           extension_number: string | null
           id: string
           internet_access: boolean | null
@@ -80,16 +81,16 @@ export type Database = {
           led_serial: string | null
           location: string | null
           mouse: string | null
-          name: string
+          name: string | null
           printer_model: string | null
           printer_serial: string | null
           scanner_model: string | null
           scanner_serial: string | null
-          section: string
+          section: string | null
           specs: string | null
           updated_at: string | null
           usb_access: boolean | null
-          username: string
+          username: string | null
         }
         Insert: {
           computer_name?: string | null
@@ -97,8 +98,9 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           custom_peripherals?: Json | null
-          department: string
-          email: string
+          department?: string | null
+          email?: string | null
+          employee_code?: string | null
           extension_number?: string | null
           id?: string
           internet_access?: boolean | null
@@ -109,16 +111,16 @@ export type Database = {
           led_serial?: string | null
           location?: string | null
           mouse?: string | null
-          name: string
+          name?: string | null
           printer_model?: string | null
           printer_serial?: string | null
           scanner_model?: string | null
           scanner_serial?: string | null
-          section: string
+          section?: string | null
           specs?: string | null
           updated_at?: string | null
           usb_access?: boolean | null
-          username: string
+          username?: string | null
         }
         Update: {
           computer_name?: string | null
@@ -126,8 +128,9 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           custom_peripherals?: Json | null
-          department?: string
-          email?: string
+          department?: string | null
+          email?: string | null
+          employee_code?: string | null
           extension_number?: string | null
           id?: string
           internet_access?: boolean | null
@@ -138,16 +141,16 @@ export type Database = {
           led_serial?: string | null
           location?: string | null
           mouse?: string | null
-          name?: string
+          name?: string | null
           printer_model?: string | null
           printer_serial?: string | null
           scanner_model?: string | null
           scanner_serial?: string | null
-          section?: string
+          section?: string | null
           specs?: string | null
           updated_at?: string | null
           usb_access?: boolean | null
-          username?: string
+          username?: string | null
         }
         Relationships: []
       }
