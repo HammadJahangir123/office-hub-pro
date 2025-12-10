@@ -28,7 +28,7 @@ const employeeSchema = z.object({
   email: z.string().email('Invalid email address').max(255).optional().or(z.literal('')),
   department: z.string().max(100).optional(),
   section: z.string().max(100).optional(),
-  location: z.string().max(100).optional(),
+  location: z.string().min(1, 'Location is required').max(100),
   computer_name: z.string().max(100).optional(),
   computer_serial: z.string().max(100).optional(),
   ip_address: z.string().max(15).optional(),
@@ -213,8 +213,9 @@ export const EmployeeForm = ({ employee, onSuccess }: EmployeeFormProps) => {
             <Input id="extension_number" {...register('extension_number')} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
+            <Label htmlFor="location">Location *</Label>
             <Input id="location" {...register('location')} placeholder="e.g., Kashmir Road" />
+            {errors.location && <p className="text-sm text-destructive">{errors.location.message}</p>}
           </div>
         </CardContent>
       </Card>
